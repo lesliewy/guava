@@ -235,6 +235,7 @@ public class JoinerTest extends TestCase {
     }
   }
 
+  // map 也可以拼接.
   public void testMap() {
     MapJoiner j = Joiner.on(';').withKeyValueSeparator(':');
     assertEquals("", j.join(ImmutableMap.of()));

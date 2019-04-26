@@ -62,6 +62,7 @@ import javax.annotation.Nullable;
 public class Joiner {
   /**
    * Returns a joiner which automatically places {@code separator} between consecutive elements.
+   * 指定分隔符.
    */
   public static Joiner on(String separator) {
     return new Joiner(separator);
@@ -76,6 +77,7 @@ public class Joiner {
 
   private final String separator;
 
+  // 禁止直接使用构造函数. 通过 on() 实现fluent风格.
   private Joiner(String separator) {
     this.separator = checkNotNull(separator);
   }
@@ -96,15 +98,17 @@ public class Joiner {
   /**
    * Appends the string representation of each of {@code parts}, using the previously configured
    * separator between each, to {@code appendable}.
-   *
+   * 核心方法, 据此拼接字符串.
    * @since 11.0
    */
   @CanIgnoreReturnValue
   public <A extends Appendable> A appendTo(A appendable, Iterator<?> parts) throws IOException {
     checkNotNull(appendable);
+    // 先 if 判断。 如果直接while, 需要单独处理下最后的分隔符.
     if (parts.hasNext()) {
       appendable.append(toString(parts.next()));
       while (parts.hasNext()) {
+        // 这里先拼接 seprator
         appendable.append(separator);
         appendable.append(toString(parts.next()));
       }
@@ -183,6 +187,7 @@ public class Joiner {
    * Returns a string containing the string representation of each of {@code parts}, using the
    * previously configured separator between each.
    */
+  // 几种 join 方式: 数组、列表.
   public final String join(Iterable<?> parts) {
     return join(parts.iterator());
   }
@@ -219,6 +224,7 @@ public class Joiner {
    */
   public Joiner useForNull(final String nullText) {
     checkNotNull(nullText);
+    // 模式同 skipNulls
     return new Joiner(this) {
       @Override
       CharSequence toString(@Nullable Object part) {
@@ -241,12 +247,14 @@ public class Joiner {
    * Returns a joiner with the same behavior as this joiner, except automatically skipping over any
    * provided null elements.
    */
+  // fluent 风格, return new Joiner(this).
   public Joiner skipNulls() {
     return new Joiner(this) {
       @Override
       public <A extends Appendable> A appendTo(A appendable, Iterator<?> parts) throws IOException {
         checkNotNull(appendable, "appendable");
         checkNotNull(parts, "parts");
+        // 先找到第一个非null元素, 和之前的 appendTo() 中先 if 判断同理.
         while (parts.hasNext()) {
           Object part = parts.next();
           if (part != null) {
@@ -309,6 +317,7 @@ public class Joiner {
    * method that accepts a map as input, and receive output of the form {@code
    *     key1=[A, B]&key2=C}.
    * </ul>
+   * 支持Map.
    *
    * @since 2.0
    */
@@ -364,7 +373,7 @@ public class Joiner {
     /**
      * Appends the string representation of each entry in {@code entries}, using the previously
      * configured separator and key-value separator, to {@code appendable}.
-     *
+     * 基本同 iterator 形式.
      * @since 11.0
      */
     @Beta
@@ -451,10 +460,12 @@ public class Joiner {
   }
 
   CharSequence toString(Object part) {
+    // 默认不允许null.
     checkNotNull(part); // checkNotNull for GWT (do not optimize).
     return (part instanceof CharSequence) ? (CharSequence) part : part.toString();
   }
 
+  // 融合这种形式的传参.
   private static Iterable<Object> iterable(
       final Object first, final Object second, final Object[] rest) {
     checkNotNull(rest);
