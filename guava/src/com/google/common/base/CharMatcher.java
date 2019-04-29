@@ -1524,6 +1524,7 @@ public abstract class CharMatcher implements Predicate<Character> {
   }
 
   /** Implementation of {@link #javaLowerCase()}. */
+  // 通过内部类继承主类方式实现, private 类型, 统一由 javaLowerCase(),  内部类可以重写方法来实现满足自己需要, 相当于在主类的基础上增加自己的特性.
   private static final class JavaLowerCase extends CharMatcher {
 
     static final JavaLowerCase INSTANCE = new JavaLowerCase();
@@ -1587,6 +1588,7 @@ public abstract class CharMatcher implements Predicate<Character> {
   // Non-static factory implementation classes
 
   /** Implementation of {@link #negate()}. */
+  // 同JavaLowCase，再次封装实现新的特性. 这里是取反.
   private static class Negated extends CharMatcher {
 
     final CharMatcher original;

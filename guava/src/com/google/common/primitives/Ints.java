@@ -40,11 +40,14 @@ import javax.annotation.Nullable;
  * <p>See the Guava User Guide article on
  * <a href="https://github.com/google/guava/wiki/PrimitivesExplained">primitive utilities</a>.
  *
+ * com.google.common.primitives 此包下都是对原生类型的支持.
+ *
  * @author Kevin Bourrillion
  * @since 1.0
  */
 @GwtCompatible
 public final class Ints {
+    // 不可实例化.
   private Ints() {}
 
   /**
@@ -474,6 +477,7 @@ public final class Ints {
 
     Object[] boxedArray = collection.toArray();
     int len = boxedArray.length;
+    // 新的array, 线程安全.
     int[] array = new int[len];
     for (int i = 0; i < len; i++) {
       // checkNotNull for GWT (do not optimize)
